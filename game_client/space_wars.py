@@ -500,8 +500,9 @@ session_high_score 	= 0
 # --------------------
 # Full Game Play Loop
 # --------------------
-
+csv_ls=[]
 quit_game = False
+game_round = 0
 while not quit_game:
 
 	# Start manu
@@ -513,7 +514,7 @@ while not quit_game:
 	level_change	= 1000			# recommended: 1000
 	level_score_increase = 10
 	level_enemy_increase = 5
-	level_coin_increase = 5
+	level_coin_increase = 10
 
 	# initialize other variables / counters
 	score 		 = 0
@@ -554,10 +555,14 @@ while not quit_game:
 	# --------------------
 
 	#initiate key focus metric
-	csv_ls=[]
+	
 	bullet_count = 0
 	coin_count = 0
 	enemy_count = 0
+	pos_x = 0
+	pos_y = 0
+	num_x = 0
+	num_y = 0
 
 	while not go_to_menu and not quit_game:
 
@@ -701,16 +706,10 @@ while not quit_game:
 						score += coin[i].hit_points
 						coin_count += 1
 				now = datetime.now()
-
-				#create dict for store focus metric
-				a = {'player_x':str(player.posX),
-				'player_y':str(player.posY),
-				'enemy_count':str(enemy_count),
-				'coin_count':str(coin_count),
-				'bullet_count':str(bullet_count),
-				'miss_bullet_count':str(bullet_count-enemy_count),
-				'timestamp':str(int(datetime.timestamp(now)))}
-				csv_ls.append(a)
+				pos_x += player.posX
+				pos_y += player.posY
+				num_x += 1
+				num_y += 1
 
 				enemy[i].show()
 				coin[i].show()
@@ -723,20 +722,36 @@ while not quit_game:
 		pygame.display.flip()
 
 		clock.tick(frames_per_second)
+		
 
 		if player.explosion_counter > 0 :
 			# to freeze and show player explosion longer
 			time.sleep(1)
 	
-	fieldnames =['player_x','player_y','enemy_count','coin_count','bullet_count','miss_bullet_count','timestamp']
-	with open('test.csv', 'w', encoding='UTF8', newline='') as f:
-		writer = csv.DictWriter(f,fieldnames)
-		writer.writeheader()
-		writer.writerows(csv_ls)
 	# Update High Score database
 	if score > 0:
 		high_scores.high_scores_update_db(db_connection, PLAYER_NAME, score)
 
+	#create dict for store focus metric
+	try:
+		a = {'player_name':PLAYER_NAME,
+		'score':score,
+		'player_x':str(pos_x/num_x),
+		'player_y':str(pos_y/num_y),
+		'enemy_count':str(enemy_count),
+		'coin_count':str(coin_count),
+		'bullet_count':str(bullet_count),
+		'miss_bullet_count':str(bullet_count-enemy_count),
+		'timestamp':str(int(datetime.timestamp(now)))}
+	except ZeroDivisionError:
+		continue
+	csv_ls.append(a)
+	fieldnames =['player_name','score','player_x','player_y','enemy_count','coin_count','bullet_count','miss_bullet_count','timestamp']
+	with open(f'{PLAYER_NAME}_{str(int(datetime.timestamp(now)))}.csv', 'w', encoding='UTF8', newline='') as f:
+		writer = csv.DictWriter(f,fieldnames)
+		writer.writeheader()
+		writer.writerows([csv_ls[game_round]])
+	game_round =+ 1
 db_connection.close()
 print('Successfully quit Space Wars!')
 
