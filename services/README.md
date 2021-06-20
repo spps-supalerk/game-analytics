@@ -62,13 +62,14 @@ def print_highscores(highscores):
     
 client.subscribe("/highscore") 
 client.connect(True)
-```
-**Example output**
-`
+
+""" Example output
 1: user-1 700
 2: user-6 650
 3: user-7 550
-`
+"""
+```
+
 ปัญหาตอนนี้อยู่ที่ client.connect(True) น่าคอยรับค้าง ถ้าเอาไปใส่ไว้ในตัวเกมน่าจะ block การทำงานของเกม
 
 
