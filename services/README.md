@@ -83,6 +83,7 @@ client.connect(True)
 อาจจะตั้งเวลาไว้ทุก ๆ 5 วินาที จะทำการอ่าน temp pickle ตัวนี้เอาค่ามาทับ high score variable
 ที่ตัวเกมก็ display ตามปกติ คะแนนก็จะอัพเดท
 
-![hs_update](./high_score_update.jpeg)
+![hs_update](./high_score_update.jpeg)  
 
 
+![explain](./test_client explanation.png)  
