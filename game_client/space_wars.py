@@ -520,7 +520,6 @@ player_maxSpeedY	= 3.5			# recommended: 3
 enemy_maxSpeedX		= 2
 enemy_maxSpeedY		= 2
 bullet_speed		= 10
-
 session_high_score 	= 0
 
 
