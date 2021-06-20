@@ -479,17 +479,17 @@ icon_image			= pygame.image.load(os.path.join(images_path , 'icon_07.png'))
 player_image		= pygame.image.load(os.path.join(images_path, 'MilFal_03.png'))
 bullet_image		= pygame.image.load(os.path.join(images_path, 'bullet.png'))
 enemy_image	    	= [pygame.image.load(os.path.join(images_path, 'ufo_01.png')),
-				       pygame.image.load(os.path.join(images_path, 'ufo_02.png')),
-				       pygame.image.load(os.path.join(images_path, 'ufo_03.png')),
-				       pygame.image.load(os.path.join(images_path, 'ufo_04.png')),
-				       pygame.image.load(os.path.join(images_path, 'spaceship_03_usd.png')),
-				       pygame.image.load(os.path.join(images_path, 'spaceship_01_usd.png')),
-					   pygame.image.load(os.path.join(images_path, 'death_star_02.png')),
-					   pygame.image.load(os.path.join(images_path, 'death_star_03.png'))]
+						pygame.image.load(os.path.join(images_path, 'ufo_02.png')),
+						pygame.image.load(os.path.join(images_path, 'ufo_03.png')),
+						pygame.image.load(os.path.join(images_path, 'ufo_04.png')),
+						pygame.image.load(os.path.join(images_path, 'spaceship_03_usd.png')),
+						pygame.image.load(os.path.join(images_path, 'spaceship_01_usd.png')),
+						pygame.image.load(os.path.join(images_path, 'death_star_02.png')),
+						pygame.image.load(os.path.join(images_path, 'death_star_03.png'))]
 explosion_image		= [pygame.image.load(os.path.join(images_path, 'explosion_01.png')),
-				       pygame.image.load(os.path.join(images_path, 'explosion_02.png'))]
+						pygame.image.load(os.path.join(images_path, 'explosion_02.png'))]
 background_image	= [pygame.image.load(os.path.join(images_path, 'background_03.jpg')),
-					   pygame.image.load(os.path.join(images_path, 'background_03_usd.jpg'))]
+						pygame.image.load(os.path.join(images_path, 'background_03_usd.jpg'))]
 coin_image 			= pygame.image.load(os.path.join(images_path, 'dodgecoin.png'))
 background_image_hight = 600
 
