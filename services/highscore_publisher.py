@@ -16,13 +16,9 @@ client.create(gearkey,gearsecret,appid,{'debugmode': True})
 client.setalias("highscore-publisher")
 
 sql_query = """
-select user, max_score
-from (
-    select user, max(score) as max_score
-    from gamestat
-    group by user
-) order by max_score desc
-limit 5
+select user, score
+from gamestat order by score desc, timestamp
+limit 3
 """
 
 def callback_connect() :
@@ -44,7 +40,7 @@ client.on_error = callback_error
 # client.subscribe("/highscore") 
 client.connect(False)
 
-wait = 3
+wait = 5
 rs = []
 while True:
     try:
