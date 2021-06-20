@@ -430,7 +430,7 @@ def show_game_over(screen_sizeX, screen_sizeY, score, highest_score_1, highest_s
 
 	# Display text and score
 	message_display_center('GAME OVER', font_large, yellow, int(screen_sizeX/2), int(screen_sizeY * 2/10))
-	message_display_center('Your Score              : ' + str(score), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *3/10))
+	message_display_center('Your Score : ' + str(score), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *3/10))
 	message_display_center('1st : ' + str(highest_score_1), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *4/10))
 	message_display_center('2nd : ' + str(highest_score_2), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *5/10))
 	message_display_center('3rd : ' + str(highest_score_3), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *6/10))
@@ -790,14 +790,15 @@ while not quit_game:
 	#create dict for store focus metric
 	try:
 		a = {'player_name':PLAYER_NAME,
-		'score':score,
-		'player_x':str(pos_x/num_x),
-		'player_y':str(pos_y/num_y),
-		'enemy_count':str(enemy_count),
-		'coin_count':str(coin_count),
-		'bullet_count':str(bullet_count),
-		'miss_bullet_count':str(bullet_count-enemy_count),
-		'timestamp':str(int(datetime.timestamp(now)))}
+			'score':score,
+			'player_x':str(pos_x/num_x),
+			'player_y':str(pos_y/num_y),
+			'enemy_count':str(enemy_count),
+			'coin_count':str(coin_count),
+			'bullet_count':str(bullet_count),
+			'miss_bullet_count':str(bullet_count-enemy_count),
+			'timestamp':str(int(datetime.timestamp(now)))
+			}
 	except ZeroDivisionError:
 		continue
 	csv_ls.append(a)
