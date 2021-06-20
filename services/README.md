@@ -86,4 +86,4 @@ client.connect(True)
 ![hs_update](./high_score_update.jpeg)  
 
 
-![explain](./test_client explanation.png)  
+![explain](./test_client_explanation.png)  
