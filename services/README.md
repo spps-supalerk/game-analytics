@@ -73,4 +73,16 @@ client.connect(True)
 ปัญหาตอนนี้อยู่ที่ `client.connect(True)` น่าจะคอยรับ message ค้างไว้ ถ้าเอาไปใส่ไว้ในตัวเกมน่าจะ block การทำงานของเกม  
 กำลังมองว่าให้มี message แยกคอยรับแล้วเขียนลง local database หรืออาจจะลองดูการรัน multithread ของ python
 
+## Draft solution 
+
+ทางเลือกนึงที่ลองดูใน `test_client.py` ทดลองแล้วทำได้ แต่ต้องไปลองใน game client จริง ๆ อีกที  
+คือ แตก multiprocess เพื่อคอย subscribe NETPIE
+เมื่อได้ high score ที่ publish มาแล้ว จะ save ลง temp pickle  
+
+ตัว game loop ที่อาจจะ display high score จาก variable อยู่แล้ว ทุก ๆ รอบ
+อาจจะตั้งเวลาไว้ทุก ๆ 5 วินาที จะทำการอ่าน temp pickle ตัวนี้เอาค่ามาทับ high score variable
+ที่ตัวเกมก็ display ตามปกติ คะแนนก็จะอัพเดท
+
+![hs_update](./high_score_update.jpeg)
+
 
