@@ -1,0 +1,89 @@
+# Game Service
+
+- `gamedb.db` แยกกับ local db ของเกมนะ จำลองว่าเป็น db ฝั่ง game server ละกัน  
+
+# Score service
+- `score_service.py` เป็นตัวคอย record score ลง gamedb คอย subscribe ที /score  
+- เวลารัน `score_service` ถ้าไม่มี ./gamedb.db จะสร้างให้ตอนแรก
+
+# Score submission
+
+ดูตัวอย่างที่ game client จะต้องส่ง end-game result ไปให้ score service ได้ที่ `test_socre_producer.py` และใช้ไฟล์นี้ในการยัด score แบบ manual ได้ (ค่าอื่น ๆ random เอา)
+
+### Score message format
+```python
+""" 
+1624164210.0624566,user-1,700,111.8,128.3,201,324,398,197
+"""
+
+ts = time.time()
+user_id = 'user-1'
+score = 700
+pos_x = 111.8 (mean of x coordinates)
+pos_y = 128.3 (mean of y coordinates)
+kill = 201
+coin = 324
+shot = 398
+miss = shot - kill
+
+msg = f"{ts},{user_id},{score},{pos_x},{pos_y},{kill},{coin},{shot},{miss}" # shot with out kill
+
+# Netpie send
+client.connect(False)
+client.publish('/score', msg)
+time.sleep(wait)
+```
+
+# High score
+- `highscore_publisher.py` จะคอยอ่าน gamedb ทุก 5 วิ แล้ว publish ออก /highscore  
+
+### High score message format
+
+ดูตัวอย่างการรับ high score ได้ที่ `test_highscore_sub.py` 
+
+```python
+"""
+user-1,700,user-6,650,user-7,550
+"""
+def parse_message(msg):
+    tokens = msg[2:-1].split(',')
+
+    highscores = list(zip(range(1, len(tokens)//2+1), tokens[0::2], tokens[1::2]))
+    return highscores
+
+def print_highscores(highscores):
+    for s in highscores:
+        print(f"{s[0]}: {s[1]} {s[2]}")
+        
+ def callback_message(topic, message) :
+    print(topic, message)
+    highscores = parse_message(message)
+    print_highscores(highscores)
+    
+client.subscribe("/highscore") 
+client.connect(True)
+
+""" Example output
+1: user-1 700
+2: user-6 650
+3: user-7 550
+"""
+```
+
+ปัญหาตอนนี้อยู่ที่ `client.connect(True)` น่าจะคอยรับ message ค้างไว้ ถ้าเอาไปใส่ไว้ในตัวเกมน่าจะ block การทำงานของเกม  
+กำลังมองว่าให้มี message แยกคอยรับแล้วเขียนลง local database หรืออาจจะลองดูการรัน multithread ของ python
+
+## Draft solution 
+
+ทางเลือกนึงที่ลองดูใน `test_client.py` ทดลองแล้วทำได้ แต่ต้องไปลองใน game client จริง ๆ อีกที  
+คือ แตก multiprocess เพื่อคอย subscribe NETPIE
+เมื่อได้ high score ที่ publish มาแล้ว จะ save ลง temp pickle  
+
+ตัว game loop ที่อาจจะ display high score จาก variable อยู่แล้ว ทุก ๆ รอบ
+อาจจะตั้งเวลาไว้ทุก ๆ 5 วินาที จะทำการอ่าน temp pickle ตัวนี้เอาค่ามาทับ high score variable
+ที่ตัวเกมก็ display ตามปกติ คะแนนก็จะอัพเดท
+
+![hs_update](./high_score_update.jpeg)  
+
+
+![explain](./test_client_explanation.png)  

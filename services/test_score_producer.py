@@ -27,14 +27,15 @@ def generate_random_message(score=None):
     ts = time.time()       # 0
     user_id = f"user-{random.randint(1,9)}"    # 1
 
-    score = score if score else random.gauss(8000,3000)
-    score = int(score   ) if score > 0 else 0    # 2
+    score = score if score else random.gauss(5000,2000)
+    score = int(score) if score > 0 else 0    # 2
     pos_x = np.mean(x_coord) # 3
     pos_y = np.mean(y_coord) # 4
     kill = random.randint(0,500) # 5
     coin = random.randint(0,500)  # 6
-    shot = random.randint(0,1000) # 7
-    msg = f"{ts},{user_id},{score},{pos_x},{pos_y},{kill},{coin},{shot}"
+    shot = kill + random.randint(1,1000) # 7
+    miss = shot - kill # 8
+    msg = f"{ts},{user_id},{score},{pos_x},{pos_y},{kill},{coin},{shot},{miss}" # shot with out kill
     return msg
 
 client.on_connect = callback_connect # แสดงข้อความเมื่อเชื่อมต่อกับ netpie สำเร็จ
