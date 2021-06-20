@@ -70,6 +70,7 @@ client.connect(True)
 """
 ```
 
-ปัญหาตอนนี้อยู่ที่ client.connect(True) น่าคอยรับค้าง ถ้าเอาไปใส่ไว้ในตัวเกมน่าจะ block การทำงานของเกม
+ปัญหาตอนนี้อยู่ที่ `client.connect(True)` น่าจะคอยรับ message ค้างไว้ ถ้าเอาไปใส่ไว้ในตัวเกมน่าจะ block การทำงานของเกม  
+กำลังมองว่าให้มี message แยกคอยรับแล้วเขียนลง local database หรืออาจจะลองดูการรัน multithread ของ python
 
 
