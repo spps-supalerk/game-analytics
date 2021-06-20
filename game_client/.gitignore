@@ -1,0 +1,11 @@
+*.csv
+*.log
+*.db
+__pycache__/
+*.vscode
+
+# Environments
+.env
+.venv
+env/
+venv/
