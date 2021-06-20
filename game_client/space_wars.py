@@ -27,6 +27,7 @@ from datetime import datetime
 from high_scores import high_scores
 from multiprocessing import Process
 from services import test_client
+import csv
 #import space_wars_settings as sws
 
 # initialize pygame
@@ -801,10 +802,8 @@ while not quit_game:
 		continue
 	csv_ls.append(a)
 	fieldnames =['player_name','score','player_x','player_y','enemy_count','coin_count','bullet_count','miss_bullet_count','timestamp']
-	# with open(f'{PLAYER_NAME}_{str(int(datetime.timestamp(now)))}.csv', 'w', encoding='UTF8', newline='') as f:
 	with open(f'game_data.csv', 'a', encoding='UTF8', newline='') as f:
 		writer = csv.DictWriter(f,fieldnames)
-		writer.writeheader()
 		writer.writerows([csv_ls[game_round]])
 	game_round =+ 1
 db_connection.close()
