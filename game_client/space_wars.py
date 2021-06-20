@@ -18,6 +18,9 @@ Backlog_revision_history.txt
 
 """
 
+import pickle
+from numpy.lib.index_tricks import fill_diagonal
+import pandas as pd
 import pygame
 import random
 import math
@@ -26,7 +29,8 @@ import time
 import sqlite3
 from datetime import datetime
 from high_scores import high_scores
-import csv
+from multiprocessing import Process
+from services import test_client
 #import space_wars_settings as sws
 
 # initialize pygame
@@ -387,25 +391,52 @@ def is_collision(object1, object2):
 def show_explosion(object, image):
 	screen.blit(image, (int(object.posX), int(object.posY)))
 
+def load_highest_score():
+    
+    p = Process(target= test_client.highscore_subscriber)
+    p.start()
+    tick = time.time()
 
-def show_score(score, level, font_size = 16, x=10, y=10):
+    while True:
+        tock = time.time()
+
+        # print high scores every 5 seconds
+        if tock - tick > 5:
+            with open(test_client.TEMP_FILE, 'rb') as f:
+                highscores = pickle.load(f)
+            tick = tock # reset timer
+        time.sleep(5)
+
+    p.join()
+    
+
+def show_score(score, level, highest_score_1, highest_score_2, highest_score_3, screen_x, font_size = 16, x=10, y=10):
 	score_font = pygame.font.Font('freesansbold.ttf', font_size)
 	level_text = score_font.render("Level  : " + str(level), True, (255, 255, 0))
 	score_text = score_font.render("Score : " + str(score), True, (255, 255, 0))
+	highest_score_text_1 = score_font.render("1st : " + str(highest_score_1), True, (255, 255, 0))
+	highest_score_text_2 = score_font.render("2nd : " + str(highest_score_2), True, (255, 255, 0))
+	highest_score_text_3 = score_font.render("3rd : " + str(highest_score_3), True, (255, 255, 0))
+ 
 	screen.blit(level_text, (x, y))
 	screen.blit(score_text, (x, y + 5 + font_size))
+	screen.blit(highest_score_text_1, (screen_x-150, y + 0))
+	screen.blit(highest_score_text_2, (screen_x-157, y + 10 + font_size))
+	screen.blit(highest_score_text_3, (screen_x-154, y + 35 + font_size))
 
 
-def show_game_over(screen_sizeX, screen_sizeY, score, high_score):
-
+def show_game_over(screen_sizeX, screen_sizeY, score, highest_score_1, highest_score_2, highest_score_3):
+	
 	# Move enemies below screen (is there a better way?)
 	for i in range(num_of_enemies):
 		enemy[i].posY = screen_sizeY + 100
 
 	# Display text and score
-	message_display_center('GAME OVER', font_large, yellow, int(screen_sizeX/2), int(screen_sizeY * 3/10))
-	message_display_center('Your Score              : ' + str(score), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *5/10))
-	message_display_center('Session Top Score : ' + str(high_score), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *6/10))
+	message_display_center('GAME OVER', font_large, yellow, int(screen_sizeX/2), int(screen_sizeY * 2/10))
+	message_display_center('Your Score              : ' + str(score), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *3/10))
+	message_display_center('1st : ' + str(highest_score_1), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *4/10))
+	message_display_center('2nd : ' + str(highest_score_2), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *5/10))
+	message_display_center('3rd : ' + str(highest_score_3), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *6/10))
 	message_display_center('Press any key to continue', font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *8/10))
 
 
@@ -428,7 +459,7 @@ def show_game_over(screen_sizeX, screen_sizeY, score, high_score):
 # Initialize Global CONSTANTS from space_wars_settings.py (sws)
 MUSIC 		= False 		#sws.MUSIC 		# True
 GAME_SPEED 	= 5 		#sws.GAME_SPEED 	# 1 to 5
-PLAYER_NAME	= 'JUMP'		#sws.PLAYER_NAME	# 'DAN'
+PLAYER_NAME	= 'PLAYER'		#sws.PLAYER_NAME	# 'DAN'
 
 
 # Initialize Global variables
@@ -500,6 +531,7 @@ session_high_score 	= 0
 # --------------------
 # Full Game Play Loop
 # --------------------
+
 csv_ls=[]
 quit_game = False
 game_round = 0
@@ -549,7 +581,15 @@ while not quit_game:
 	for i in range(num_of_coins):
 		coin.append(SpaceCoin(coin_image, explosion_image[1], speedY = level, hit_points = level))
 		coin_respawn(coin[i], level)
-
+  
+	# init high score process
+	p = Process(target= test_client.highscore_subscriber)
+	p.start()
+	tick = time.time()
+	highest_score_from_df_1 = str()
+	highest_score_from_df_2 = str()
+	highest_score_from_df_3 = str()
+ 
 	# --------------------
 	# Main Game Play Loop
 	# --------------------
@@ -565,6 +605,24 @@ while not quit_game:
 	num_y = 0
 
 	while not go_to_menu and not quit_game:
+     		tock = time.time()
+		if tock - tick > 5:
+			with open(test_client.TEMP_FILE, 'rb') as f:
+				highscores = pickle.load(f)
+				tick = tock # reset timer
+				df_highscores = pd.DataFrame(highscores)
+				try:
+					highest_score_from_df_1 = str(df_highscores[1][0]) + " " + str(df_highscores[2][0])
+				except:
+					highest_score_from_df_1 = str()
+				try:
+					highest_score_from_df_2 = str(df_highscores[1][1]) + " " + str(df_highscores[2][1])
+				except:
+					highest_score_from_df_2 = str()
+				try:
+					highest_score_from_df_3 = str(df_highscores[1][2]) + " " + str(df_highscores[2][2])
+				except:
+					highest_score_from_df_3 = str()
 
 		# Fill screen and background image
 		screen.fill(background_color)
@@ -654,8 +712,9 @@ while not quit_game:
 		
 		if game_over:
 			player.explosion_counter = 0
-			show_game_over(screen_sizeX, screen_sizeY, score, session_high_score)
-			show_score(score, level)
+			show_game_over(screen_sizeX, screen_sizeY, score, highest_score_from_df_1, highest_score_from_df_2, highest_score_from_df_3)
+			show_score(score, level, highest_score_from_df_1, highest_score_from_df_2, highest_score_from_df_3, screen_x = screen_sizeX)
+
 		else:
 
 			# Move enemies and check collisions
@@ -717,7 +776,7 @@ while not quit_game:
 			# show player
 			bullet.show()
 			player.show()
-			show_score(score, level)
+			show_score(score, level, highest_score_from_df_1, highest_score_from_df_2, highest_score_from_df_3, screen_x = screen_sizeX)
 
 		pygame.display.flip()
 
