@@ -3,19 +3,15 @@
 Game name:		Space Wars (change to cooler name)
 Author:			Dan Petersson
 Github link:	https://github.com/DanPetersson/SpaceWars
-
 Description:
 ---------------------------------------------------------
 - Survive as long as possible as shoot as many aliens as possible to get good score
-
 ---------------------------------------------------------
 Python:			3.8
 PyGame:			1.9.6
-
 Revision updates:
 ---------------------------------------------------------
 Backlog_revision_history.txt
-
 """
 
 import pickle
@@ -581,7 +577,7 @@ while not quit_game:
 	for i in range(num_of_coins):
 		coin.append(SpaceCoin(coin_image, explosion_image[1], speedY = level, hit_points = level))
 		coin_respawn(coin[i], level)
-  
+
 	# init high score process
 	p = Process(target= test_client.highscore_subscriber)
 	p.start()
@@ -589,7 +585,7 @@ while not quit_game:
 	highest_score_from_df_1 = str()
 	highest_score_from_df_2 = str()
 	highest_score_from_df_3 = str()
- 
+
 	# --------------------
 	# Main Game Play Loop
 	# --------------------
@@ -605,7 +601,7 @@ while not quit_game:
 	num_y = 0
 
 	while not go_to_menu and not quit_game:
-     		tock = time.time()
+		tock = time.time()
 		if tock - tick > 5:
 			with open(test_client.TEMP_FILE, 'rb') as f:
 				highscores = pickle.load(f)
@@ -673,7 +669,7 @@ while not quit_game:
 
 				# 'p' or ESC' for pause
 				elif event.key == pygame.K_p or event.key == pygame.K_ESCAPE:
-				 	paused(screen_sizeX, screen_sizeY)
+					paused(screen_sizeX, screen_sizeY)
 
 				# 'arrow keys' for movement
 				elif event.key == pygame.K_LEFT:
@@ -813,5 +809,3 @@ while not quit_game:
 	game_round =+ 1
 db_connection.close()
 print('Successfully quit Space Wars!')
-
-
