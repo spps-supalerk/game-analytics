@@ -10,7 +10,7 @@ from multiprocessing.sharedctypes import Value, Array
 import ctypes
 
 # DATABASE = './gamedb.db'
-# TEMP_FILE = './temp.pkl'
+TEMP_FILE = './temp.pkl'
 
 # initlize msg buffer (array of byte - size=100)
 msg_buffer = Array('c', (" "*100).encode('utf-8'), lock=False)
