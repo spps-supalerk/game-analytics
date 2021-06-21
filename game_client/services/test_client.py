@@ -6,11 +6,7 @@ from datetime import datetime
 from multiprocessing import Process
 import pickle
 
-<<<<<<< HEAD
-# DATABASE = './gamedb.db'
-=======
 DATABASE = './gamedb.db'
->>>>>>> 328ace277821ad540b8a836ab2551deaf16e2931
 TEMP_FILE = './temp.pkl'
 
 highscores = []

@@ -258,7 +258,10 @@ def show_high_scores():
 
 def menu():
 	# into screen
-
+	name_button_X = int(screen_sizeX*1/2)
+	name_button_Y = 300
+	name_text = ''
+	name_button	= Button(name_button_X, name_button_Y, 130, 50, name_text)
 	intro_screen = True
 	while intro_screen:
 
@@ -275,6 +278,10 @@ def menu():
 		# Define and draw buttons
 		button_width 	= 130
 		button_hight 	= 50
+
+		# Define and draw "Name" Input Box
+		name_button.show(pygame.mouse.get_pos())
+		name_button.check_clicked(mouse, mouse_click)
 
 		# Define and draw "Yes" button
 		yes_button_X 	= int(screen_sizeX*1/4)
@@ -312,14 +319,16 @@ def menu():
 				intro_screen = False
 				quit_game = True
 
-		# if 'Y' or 'N' key is pressed
+		# if 'Enter Name'
 			if event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_y or event.key == pygame.K_z or event.key == pygame.K_RETURN:
-					intro_screen = False
-					quit_game = False
-				if event.key == pygame.K_n:
-					intro_screen = False
-					quit_game = True
+				if event.key == pygame.K_BACKSPACE:
+					name_text = name_text[:-1]
+				else:
+					name_text += event.unicode
+				global PLAYER_NAME 
+				PLAYER_NAME = name_text
+				name_button.text = name_text
+				name_button.show(mouse)
 
 		# Display intro screen
 		pygame.display.update()
@@ -456,7 +465,7 @@ def show_game_over(screen_sizeX, screen_sizeY, score, highest_score_1, highest_s
 # Initialize Global CONSTANTS from space_wars_settings.py (sws)
 MUSIC 		= False 		#sws.MUSIC 		# True
 GAME_SPEED 	= 5 		#sws.GAME_SPEED 	# 1 to 5
-PLAYER_NAME	= 'PLAYER'		#sws.PLAYER_NAME	# 'DAN'
+# PLAYER_NAME	= 'PLAYER'		#sws.PLAYER_NAME	# 'DAN'
 
 
 # Initialize Global variables
