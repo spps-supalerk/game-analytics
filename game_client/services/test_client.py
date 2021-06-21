@@ -5,75 +5,75 @@ import sqlite3
 from datetime import datetime
 from multiprocessing import Process
 import pickle
-from multiprocessing import Process, Lock
-from multiprocessing.sharedctypes import Value, Array
-import ctypes
 
+<<<<<<< HEAD
 # DATABASE = './gamedb.db'
+=======
+DATABASE = './gamedb.db'
+>>>>>>> 328ace277821ad540b8a836ab2551deaf16e2931
 TEMP_FILE = './temp.pkl'
 
-# initlize msg buffer (array of byte - size=100)
-msg_buffer = Array('c', (" "*100).encode('utf-8'), lock=False)
+highscores = []
 
 
+# NetPie client
+# key: sub-highscore
+appid = 'MookataGame'
+gearkey = 'Q1GXcLhGXDHKqLH'
+gearsecret = 'dojFgPxaY0yY901bwK4YmWx6V'
+
+client.create(gearkey,gearsecret,appid,{'debugmode': True}) # สร้างข้อมูลสำหรับใช้เชื่อมต่อ
+client.setalias("test-game-client")
 
 
 def parse_message(msg):
-    tokens = msg.decode('utf-8')[2:-1].split(',')
+    tokens = msg[2:-1].split(',')
 
     highscores = list(zip(range(1, len(tokens)//2+1), tokens[0::2], tokens[1::2]))
     return highscores
 
 def print_highscores(highscores):
-    if highscores: 
-        for s in highscores:
-            print(f"{s[0]}: {s[1]} {s[2]}")
-    else:
-        print('no scores')
+    for s in highscores:
+        print(f"{s[0]}: {s[1]} {s[2]}")
 
-# Process 2
-def highscore_subscriber(msg_buffer):
-
-    def callback_connect():
-        print ("Now I am connected with netpie")
-
-    def callback_error(msg) :
-        print("error", msg)
-
-    def callback_message(topic, message) :
-        print(topic, message)
-        msg_buffer.value = message.encode('utf-8')
+def callback_connect() :
+    print ("Now I am connected with netpie")
     
-    # NetPie client
-    # key: sub-highscore
-    appid = 'MookataGame'
-    gearkey = 'Q1GXcLhGXDHKqLH'
-    gearsecret = 'dojFgPxaY0yY901bwK4YmWx6V'
+def callback_message(topic, message) :
+    print(topic, message)
+    hs_data = parse_message(message)
+    with open('temp.pkl', 'wb') as f:
+        pickle.dump(hs_data, f)
 
-    client.create(gearkey,gearsecret,appid,{'debugmode': True})
-    client.setalias("test-game-client")
-    client.on_connect = callback_connect 
-    client.on_message = callback_message
-    client.on_error = callback_error 
-    client.subscribe("/highscore") 
+def callback_error(msg) :
+    print("error", msg)
+
+client.on_connect = callback_connect 
+client.on_message= callback_message 
+client.on_error = callback_error 
+client.subscribe("/highscore") 
+
+def highscore_subscriber():
     client.connect(True)
 
 if __name__ == '__main__':
 
-    p = Process(target=highscore_subscriber, args=(msg_buffer,))
+    p = Process(target=highscore_subscriber)
     p.start()
-    
+    tick = time.time()
 
-    # Game loop
     while True:
+        tock = time.time()
 
-        print('game loop:', time.time())
-        msg = msg_buffer.value
-        
-        print_highscores(parse_message(msg))
+        # print high scores every 5 seconds
+        if tock - tick > 5:
+            with open(TEMP_FILE, 'rb') as f:
+                highscores = pickle.load(f)
+            tick = tock # reset timer
 
-        time.sleep(1)
+        print(time.time())
+        print_highscores(highscores)
+
+        time.sleep(.5)
 
     p.join()
-
-
