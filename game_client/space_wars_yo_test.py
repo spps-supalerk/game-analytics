@@ -423,8 +423,11 @@ def show_score(score, level, highest_score_1, highest_score_2, highest_score_3, 
 
 def show_game_over(screen_sizeX, screen_sizeY, player_name, score, high_score_a):
     new_score = (score,PLAYER_NAME)
-    high_score_a.append(new_score)
-    high_score_a.sort(reverse=True)
+    if new_score in high_score_a:
+        pass
+    else:
+        high_score_a.append(new_score)
+        high_score_a.sort(reverse=True)
     highest_score_1 = high_score_a[0][1] + " - " + str(high_score_a[0][0])
     highest_score_2 = high_score_a[1][1] + " - " + str(high_score_a[1][0])
     highest_score_3 = high_score_a[2][1] + " - " + str(high_score_a[2][0])
@@ -675,13 +678,12 @@ if __name__ == '__main__':
 		num_y = 0
 
 		while not go_to_menu and not quit_game:
-			print('game loop:', time.time())
+			# print('game loop:', time.time())
 			msg = msg_buffer.value
 			try:
 				high_score_all = parse_message(msg)
 			except:
 				pass
-			print(high_score_all)
 			try:
 				highest_score_from_df_1 = str(high_score_all[0][1]) + " " + str(high_score_all[0][0])
 			except:
@@ -783,8 +785,7 @@ if __name__ == '__main__':
 			bullet.update_bullet_position(screen_sizeX, screen_sizeY)
 			
 			if game_over:
-				b = str(int(datetime.timestamp(now)))+","+PLAYER_NAME+","+str(score)+","+str(pos_x/num_x)+","+str(pos_y/num_y)+","+str(enemy_count)+","+str(coin_count)+","+str(bullet_count)+","+str(bullet_count-enemy_count)+","+str(int(datetime.timestamp(now)))
-				client.publish('/score', b)
+       
 				player.explosion_counter = 0
 				show_game_over(screen_sizeX, screen_sizeY, PLAYER_NAME, score, high_score_all)
 				show_score(score, level, highest_score_from_df_1, highest_score_from_df_2, highest_score_from_df_3, screen_x = screen_sizeX)
@@ -860,11 +861,12 @@ if __name__ == '__main__':
 			if player.explosion_counter > 0 :
 				# to freeze and show player explosion longer
 				time.sleep(1)
-		
+			
 		# Update High Score database
 		if score > 0:
 			high_scores.high_scores_update_db(db_connection, PLAYER_NAME, score)
-
+		b = str(int(datetime.timestamp(now)))+","+PLAYER_NAME+","+str(score)+","+str(pos_x/num_x)+","+str(pos_y/num_y)+","+str(enemy_count)+","+str(coin_count)+","+str(bullet_count)+","+str(bullet_count-enemy_count)+","+str(int(datetime.timestamp(now)))
+		client.publish('/score', b)
 		#create dict for store focus metric
 		try:
 			a = {'player_name':PLAYER_NAME,
