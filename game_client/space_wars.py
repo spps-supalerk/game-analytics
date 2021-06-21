@@ -449,372 +449,372 @@ def show_game_over(screen_sizeX, screen_sizeY, score, highest_score_1, highest_s
 #############################
 #		Main Program		#
 #############################
-#if __name__ == '__main__':
+if __name__ == '__main__':
 
-# # initialize pygame
-# pygame.init()
+	# # initialize pygame
+	# pygame.init()
 
-# # Initialize fonts
-# font_huge	= pygame.font.Font('freesansbold.ttf', 128)
-# font_large	= pygame.font.Font('freesansbold.ttf', 64)
-# font_medium	= pygame.font.Font('freesansbold.ttf', 32)
-# font_small	= pygame.font.Font('freesansbold.ttf', 16)
-# font_tiny	= pygame.font.Font('freesansbold.ttf', 8)
-
-
-# Initialize Global CONSTANTS from space_wars_settings.py (sws)
-MUSIC 		= False 		#sws.MUSIC 		# True
-GAME_SPEED 	= 5 		#sws.GAME_SPEED 	# 1 to 5
-# PLAYER_NAME	= 'PLAYER'		#sws.PLAYER_NAME	# 'DAN'
+	# # Initialize fonts
+	font_huge	= pygame.font.Font('freesansbold.ttf', 128)
+	font_large	= pygame.font.Font('freesansbold.ttf', 64)
+	font_medium	= pygame.font.Font('freesansbold.ttf', 32)
+	font_small	= pygame.font.Font('freesansbold.ttf', 16)
+	font_tiny	= pygame.font.Font('freesansbold.ttf', 8)
 
 
-# Initialize Global variables
-screen_sizeX = 800
-screen_sizeY = 600
-screen_size = (screen_sizeX, screen_sizeY)
-background_color = black
-# Initialize screen
-screen = pygame.display.set_mode((screen_sizeX, screen_sizeY))
-#screen = pygame.display.set_mode((screen_sizeX, screen_sizeY), flags=pygame.FULLSCREEN)
+	# Initialize Global CONSTANTS from space_wars_settings.py (sws)
+	MUSIC 		= False 		#sws.MUSIC 		# True
+	GAME_SPEED 	= 5 		#sws.GAME_SPEED 	# 1 to 5
+	# PLAYER_NAME	= 'PLAYER'		#sws.PLAYER_NAME	# 'DAN'
 
 
-# Get working directory and subdirectories
-dir_path = os.getcwd()
-images_path = os.path.join(dir_path, 'images')
-sounds_path = os.path.join(dir_path, 'sounds')
+	# Initialize Global variables
+	screen_sizeX = 800
+	screen_sizeY = 600
+	screen_size = (screen_sizeX, screen_sizeY)
+	background_color = black
+	# Initialize screen
+	screen = pygame.display.set_mode((screen_sizeX, screen_sizeY))
+	#screen = pygame.display.set_mode((screen_sizeX, screen_sizeY), flags=pygame.FULLSCREEN)
 
 
-# Initialize images
-icon_image			= pygame.image.load(os.path.join(images_path , 'icon_07.png'))
-player_image		= pygame.image.load(os.path.join(images_path, 'MilFal_03.png'))
-bullet_image		= pygame.image.load(os.path.join(images_path, 'bullet.png'))
-enemy_image	    	= [pygame.image.load(os.path.join(images_path, 'ufo_01.png')),
-						pygame.image.load(os.path.join(images_path, 'ufo_02.png')),
-						pygame.image.load(os.path.join(images_path, 'ufo_03.png')),
-						pygame.image.load(os.path.join(images_path, 'ufo_04.png')),
-						pygame.image.load(os.path.join(images_path, 'spaceship_03_usd.png')),
-						pygame.image.load(os.path.join(images_path, 'spaceship_01_usd.png')),
-						pygame.image.load(os.path.join(images_path, 'death_star_02.png')),
-						pygame.image.load(os.path.join(images_path, 'death_star_03.png'))]
-explosion_image		= [pygame.image.load(os.path.join(images_path, 'explosion_01.png')),
-						pygame.image.load(os.path.join(images_path, 'explosion_02.png'))]
-background_image	= [pygame.image.load(os.path.join(images_path, 'background_03.jpg')),
-						pygame.image.load(os.path.join(images_path, 'background_03_usd.jpg'))]
-coin_image 			= pygame.image.load(os.path.join(images_path, 'dodgecoin.png'))
-background_image_hight = 600
-
-# Caption and Icon
-pygame.display.set_caption("Space Wars")
-pygame.display.set_icon(icon_image)
-
-# Initialize sounds
-bullet_sound		= pygame.mixer.Sound(os.path.join(sounds_path, 'laser.wav'))
-explosion_sound		= pygame.mixer.Sound(os.path.join(sounds_path, 'explosion.wav'))
-
-# Start backgound music
-if MUSIC:
-	pygame.mixer.music.load(os.path.join(sounds_path, 'background.wav'))
-	pygame.mixer.music.play(-1)
-
-# Initialize game speed settings
-frames_per_second = 20 + 10 * GAME_SPEED
-clock = pygame.time.Clock()
-
-# Initialize connection to high score database
-db_connection = high_scores.high_scores_connect_to_db('high_scores.db')
-high_scores.high_scores_create_table(db_connection)
-
-# Initialize settings
-player_maxSpeedX	= 3.5			# recommended: 3
-player_maxSpeedY	= 3.5			# recommended: 3
-enemy_maxSpeedX		= 2
-enemy_maxSpeedY		= 2
-bullet_speed		= 10
-session_high_score 	= 0
+	# Get working directory and subdirectories
+	dir_path = os.getcwd()
+	images_path = os.path.join(dir_path, 'images')
+	sounds_path = os.path.join(dir_path, 'sounds')
 
 
-# --------------------
-# Full Game Play Loop
-# --------------------
+	# Initialize images
+	icon_image			= pygame.image.load(os.path.join(images_path , 'icon_07.png'))
+	player_image		= pygame.image.load(os.path.join(images_path, 'MilFal_03.png'))
+	bullet_image		= pygame.image.load(os.path.join(images_path, 'bullet.png'))
+	enemy_image	    	= [pygame.image.load(os.path.join(images_path, 'ufo_01.png')),
+							pygame.image.load(os.path.join(images_path, 'ufo_02.png')),
+							pygame.image.load(os.path.join(images_path, 'ufo_03.png')),
+							pygame.image.load(os.path.join(images_path, 'ufo_04.png')),
+							pygame.image.load(os.path.join(images_path, 'spaceship_03_usd.png')),
+							pygame.image.load(os.path.join(images_path, 'spaceship_01_usd.png')),
+							pygame.image.load(os.path.join(images_path, 'death_star_02.png')),
+							pygame.image.load(os.path.join(images_path, 'death_star_03.png'))]
+	explosion_image		= [pygame.image.load(os.path.join(images_path, 'explosion_01.png')),
+							pygame.image.load(os.path.join(images_path, 'explosion_02.png'))]
+	background_image	= [pygame.image.load(os.path.join(images_path, 'background_03.jpg')),
+							pygame.image.load(os.path.join(images_path, 'background_03_usd.jpg'))]
+	coin_image 			= pygame.image.load(os.path.join(images_path, 'dodgecoin.png'))
+	background_image_hight = 600
 
-csv_ls=[]
-quit_game = False
-game_round = 0
-while not quit_game:
+	# Caption and Icon
+	pygame.display.set_caption("Space Wars")
+	pygame.display.set_icon(icon_image)
 
-	# Start manu
-	quit_game = menu()
+	# Initialize sounds
+	bullet_sound		= pygame.mixer.Sound(os.path.join(sounds_path, 'laser.wav'))
+	explosion_sound		= pygame.mixer.Sound(os.path.join(sounds_path, 'explosion.wav'))
 
-	# Game settings
-	num_of_enemies	= 5				# recommended: 5
-	num_of_coins	= 5
-	level_change	= 1000			# recommended: 1000
-	level_score_increase = 10
-	level_enemy_increase = 5
-	level_coin_increase = 10
+	# Start backgound music
+	if MUSIC:
+		pygame.mixer.music.load(os.path.join(sounds_path, 'background.wav'))
+		pygame.mixer.music.play(-1)
 
-	# initialize other variables / counters
-	score 		 = 0
-	level		 = 1
-	level_iter	 = 0
-	loop_iter	 = 0
-	keyX_pressed = 0
-	keyY_pressed = 0
-	game_over 	 = False
-	go_to_menu 	 = False
+	# Initialize game speed settings
+	frames_per_second = 20 + 10 * GAME_SPEED
+	clock = pygame.time.Clock()
 
-	backgound_Y_lower = 0
-	backgound_Y_upper = backgound_Y_lower - background_image_hight
-	upper_index = 0
-	lower_index = 1
+	# Initialize connection to high score database
+	db_connection = high_scores.high_scores_connect_to_db('high_scores.db')
+	high_scores.high_scores_create_table(db_connection)
 
+	# Initialize settings
+	player_maxSpeedX	= 3.5			# recommended: 3
+	player_maxSpeedY	= 3.5			# recommended: 3
+	enemy_maxSpeedX		= 2
+	enemy_maxSpeedY		= 2
+	bullet_speed		= 10
+	session_high_score 	= 0
 
-	# initialize player and bullet
-	player = SpaceShip(player_image, explosion_image[0], screen_sizeX/2-32, screen_sizeY-100)
-	bullet = Bullet(bullet_image, explosion_image[0], speedY = -bullet_speed, sound = bullet_sound, state = 'hide', sizeX = 32, sizeY = 32)
-	
-	# initialize enemies
-	enemy = []
-	enemy_image_index = 0
-	for i in range(num_of_enemies):
-		enemy.append(SpaceEnemy(enemy_image[enemy_image_index], explosion_image[1], speedY = level, hit_points = level))
-		enemy_respawn(enemy[i], level)
-
-	# initialize coins
-	coin = []
-	# coin_image_index = 0
-	for i in range(num_of_coins):
-		coin.append(SpaceCoin(coin_image, explosion_image[1], speedY = level, hit_points = level))
-		coin_respawn(coin[i], level)
-
-	# init high score process
-	p = Process(target= test_client.highscore_subscriber)
-	p.start()
-	tick = time.time()
-	highest_score_from_df_1 = str()
-	highest_score_from_df_2 = str()
-	highest_score_from_df_3 = str()
 
 	# --------------------
-	# Main Game Play Loop
+	# Full Game Play Loop
 	# --------------------
 
-	#initiate key focus metric
-	
-	bullet_count = 0
-	coin_count = 0
-	enemy_count = 0
-	pos_x = 0
-	pos_y = 0
-	num_x = 0
-	num_y = 0
+	csv_ls=[]
+	quit_game = False
+	game_round = 0
+	while not quit_game:
 
-	while not go_to_menu and not quit_game:
-		tock = time.time()
-		if tock - tick > 5:
-			with open(test_client.TEMP_FILE, 'rb') as f:
-				highscores = pickle.load(f)
-				tick = tock # reset timer
-				df_highscores = pd.DataFrame(highscores)
-				try:
-					highest_score_from_df_1 = str(df_highscores[1][0]) + " " + str(df_highscores[2][0])
-				except:
-					highest_score_from_df_1 = str()
-				try:
-					highest_score_from_df_2 = str(df_highscores[1][1]) + " " + str(df_highscores[2][1])
-				except:
-					highest_score_from_df_2 = str()
-				try:
-					highest_score_from_df_3 = str(df_highscores[1][2]) + " " + str(df_highscores[2][2])
-				except:
-					highest_score_from_df_3 = str()
+		# Start manu
+		quit_game = menu()
 
-		# Fill screen and background image
-		screen.fill(background_color)
+		# Game settings
+		num_of_enemies	= 5				# recommended: 5
+		num_of_coins	= 5
+		level_change	= 1000			# recommended: 1000
+		level_score_increase = 10
+		level_enemy_increase = 5
+		level_coin_increase = 10
 
-		# Background images moving
-		backgound_Y_lower += 1
-		backgound_Y_upper += 1
-		if backgound_Y_lower > screen_sizeY:
-			backgound_Y_lower = backgound_Y_upper
-			backgound_Y_upper = backgound_Y_lower - background_image_hight
-			temp = upper_index
-			upper_index = lower_index
-			lower_index = temp
-		screen.blit(background_image[upper_index], (0,backgound_Y_upper))
-		screen.blit(background_image[lower_index], (0,backgound_Y_lower))
+		# initialize other variables / counters
+		score 		 = 0
+		level		 = 1
+		level_iter	 = 0
+		loop_iter	 = 0
+		keyX_pressed = 0
+		keyY_pressed = 0
+		game_over 	 = False
+		go_to_menu 	 = False
 
-		# check if increase level
-		level_iter += 1
-		if level_iter > level_change and not game_over:
-			level_iter = 0
-			level += 1
-			# increase number of enemies with higher speed
-			enemy_image_index = (level -1) % len(enemy_image)
-			for i in range(num_of_enemies, num_of_enemies+level_enemy_increase):
-				enemy.append(SpaceEnemy(enemy_image[enemy_image_index], explosion_image[1], speedY = level, hit_points = level))
-				enemy_respawn(enemy[i], level)
-			num_of_enemies	+= level_enemy_increase
-
-			for i in range(num_of_coins,num_of_coins+level_coin_increase):
-				coin.append(SpaceCoin(coin_image, explosion_image[1], speedY = level, hit_points = level))
-				coin_respawn(coin[i], level)
-			num_of_coins += level_coin_increase
-
-			# increase score when reaching new level
-#			score += level_score_increase
-
-		# Check events and take action
-		for event in pygame.event.get():
-			if event.type == pygame.QUIT:
-				quit_game = True
-
-			# if key is pressed
-			if event.type == pygame.KEYDOWN:
-
-				# if Game Over and any key, go to menu
-				if game_over:
-					go_to_menu = True
-
-				# 'p' or ESC' for pause
-				elif event.key == pygame.K_p or event.key == pygame.K_ESCAPE:
-					paused(screen_sizeX, screen_sizeY)
-
-				# 'arrow keys' for movement
-				elif event.key == pygame.K_LEFT:
-					player.speedX = -player_maxSpeedX
-					keyX_pressed += 1
-				elif event.key == pygame.K_RIGHT:
-					player.speedX = player_maxSpeedX
-					keyX_pressed += 1
-				elif event.key == pygame.K_UP:
-					player.speedY = -player_maxSpeedY
-					keyY_pressed += 1
-				elif event.key == pygame.K_DOWN:
-					player.speedY = player_maxSpeedY
-					keyY_pressed += 1
-
-				# if space key, fire bullet
-				elif (event.key == pygame.K_SPACE or event.key == pygame.K_a) and bullet.state == 'hide':
-					bullet.fire_bullet(player)
-					bullet_count +=1
+		backgound_Y_lower = 0
+		backgound_Y_upper = backgound_Y_lower - background_image_hight
+		upper_index = 0
+		lower_index = 1
 
 
-			# if key is released, stop movement in a nice way
-			if event.type == pygame.KEYUP:
-				if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-					keyX_pressed -= 1
-					if keyX_pressed == 0:
-						player.speedX = 0
-				if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-					keyY_pressed -= 1
-					if keyY_pressed == 0:
-						player.speedY = 0
-
-		# Move player and check not out of screen
-		player.update_player_postion(screen_sizeX, screen_sizeY)
-		bullet.update_bullet_position(screen_sizeX, screen_sizeY)
+		# initialize player and bullet
+		player = SpaceShip(player_image, explosion_image[0], screen_sizeX/2-32, screen_sizeY-100)
+		bullet = Bullet(bullet_image, explosion_image[0], speedY = -bullet_speed, sound = bullet_sound, state = 'hide', sizeX = 32, sizeY = 32)
 		
-		if game_over:
-			player.explosion_counter = 0
-			show_game_over(screen_sizeX, screen_sizeY, score, highest_score_from_df_1, highest_score_from_df_2, highest_score_from_df_3)
-			show_score(score, level, highest_score_from_df_1, highest_score_from_df_2, highest_score_from_df_3, screen_x = screen_sizeX)
+		# initialize enemies
+		enemy = []
+		enemy_image_index = 0
+		for i in range(num_of_enemies):
+			enemy.append(SpaceEnemy(enemy_image[enemy_image_index], explosion_image[1], speedY = level, hit_points = level))
+			enemy_respawn(enemy[i], level)
 
-		else:
+		# initialize coins
+		coin = []
+		# coin_image_index = 0
+		for i in range(num_of_coins):
+			coin.append(SpaceCoin(coin_image, explosion_image[1], speedY = level, hit_points = level))
+			coin_respawn(coin[i], level)
 
-			# Move enemies and check collisions
-			for i in range(num_of_enemies):
+		# init high score process
+		p = Process(target= test_client.highscore_subscriber)
+		p.start()
+		tick = time.time()
+		highest_score_from_df_1 = str()
+		highest_score_from_df_2 = str()
+		highest_score_from_df_3 = str()
 
-				# if enemy exploding
-				if enemy[i].explosion_counter >= 1:
-					enemy[i].explosion_counter -= 1
-				elif enemy[i].explosion_counter == 0:
+		# --------------------
+		# Main Game Play Loop
+		# --------------------
+
+		#initiate key focus metric
+		
+		bullet_count = 0
+		coin_count = 0
+		enemy_count = 0
+		pos_x = 0
+		pos_y = 0
+		num_x = 0
+		num_y = 0
+
+		while not go_to_menu and not quit_game:
+			tock = time.time()
+			if tock - tick > 5:
+				with open(test_client.TEMP_FILE, 'rb') as f:
+					highscores = pickle.load(f)
+					tick = tock # reset timer
+					df_highscores = pd.DataFrame(highscores)
+					try:
+						highest_score_from_df_1 = str(df_highscores[1][0]) + " " + str(df_highscores[2][0])
+					except:
+						highest_score_from_df_1 = str()
+					try:
+						highest_score_from_df_2 = str(df_highscores[1][1]) + " " + str(df_highscores[2][1])
+					except:
+						highest_score_from_df_2 = str()
+					try:
+						highest_score_from_df_3 = str(df_highscores[1][2]) + " " + str(df_highscores[2][2])
+					except:
+						highest_score_from_df_3 = str()
+
+			# Fill screen and background image
+			screen.fill(background_color)
+
+			# Background images moving
+			backgound_Y_lower += 1
+			backgound_Y_upper += 1
+			if backgound_Y_lower > screen_sizeY:
+				backgound_Y_lower = backgound_Y_upper
+				backgound_Y_upper = backgound_Y_lower - background_image_hight
+				temp = upper_index
+				upper_index = lower_index
+				lower_index = temp
+			screen.blit(background_image[upper_index], (0,backgound_Y_upper))
+			screen.blit(background_image[lower_index], (0,backgound_Y_lower))
+
+			# check if increase level
+			level_iter += 1
+			if level_iter > level_change and not game_over:
+				level_iter = 0
+				level += 1
+				# increase number of enemies with higher speed
+				enemy_image_index = (level -1) % len(enemy_image)
+				for i in range(num_of_enemies, num_of_enemies+level_enemy_increase):
+					enemy.append(SpaceEnemy(enemy_image[enemy_image_index], explosion_image[1], speedY = level, hit_points = level))
 					enemy_respawn(enemy[i], level)
-				else:
-					enemy[i].update_enemy_position(screen_sizeX, screen_sizeY)
-					if enemy[i].posY > screen_sizeY:
-						enemy_respawn(enemy[i], level)
-					enemy[i].show()
+				num_of_enemies	+= level_enemy_increase
 
-					# if enemy collision with player
-					if is_collision(enemy[i], player):
-						explosion_sound.play()
-						player.explosion_counter = 5
-						if score > session_high_score:
-							session_high_score = score
-						game_over = True
-
-					# if bullet hits enemy
-					elif bullet.state == 'show' and is_collision(enemy[i], bullet) :
-						explosion_sound.play()
-						enemy[i].explosion_counter = 10
-						score += enemy[i].hit_points
-						enemy_count += 1
-						bullet.state = 'hide'
-
-				# if coin exploding
-				if coin[i].explosion_counter >= 1:
-					coin[i].explosion_counter -= 1
-				elif coin[i].explosion_counter == 0:
+				for i in range(num_of_coins,num_of_coins+level_coin_increase):
+					coin.append(SpaceCoin(coin_image, explosion_image[1], speedY = level, hit_points = level))
 					coin_respawn(coin[i], level)
-				else:
-					coin[i].update_coin_position(screen_sizeX, screen_sizeY)
-					if coin[i].posY > screen_sizeY:
+				num_of_coins += level_coin_increase
+
+				# increase score when reaching new level
+	#			score += level_score_increase
+
+			# Check events and take action
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					quit_game = True
+
+				# if key is pressed
+				if event.type == pygame.KEYDOWN:
+
+					# if Game Over and any key, go to menu
+					if game_over:
+						go_to_menu = True
+
+					# 'p' or ESC' for pause
+					elif event.key == pygame.K_p or event.key == pygame.K_ESCAPE:
+						paused(screen_sizeX, screen_sizeY)
+
+					# 'arrow keys' for movement
+					elif event.key == pygame.K_LEFT:
+						player.speedX = -player_maxSpeedX
+						keyX_pressed += 1
+					elif event.key == pygame.K_RIGHT:
+						player.speedX = player_maxSpeedX
+						keyX_pressed += 1
+					elif event.key == pygame.K_UP:
+						player.speedY = -player_maxSpeedY
+						keyY_pressed += 1
+					elif event.key == pygame.K_DOWN:
+						player.speedY = player_maxSpeedY
+						keyY_pressed += 1
+
+					# if space key, fire bullet
+					elif (event.key == pygame.K_SPACE or event.key == pygame.K_a) and bullet.state == 'hide':
+						bullet.fire_bullet(player)
+						bullet_count +=1
+
+
+				# if key is released, stop movement in a nice way
+				if event.type == pygame.KEYUP:
+					if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+						keyX_pressed -= 1
+						if keyX_pressed == 0:
+							player.speedX = 0
+					if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+						keyY_pressed -= 1
+						if keyY_pressed == 0:
+							player.speedY = 0
+
+			# Move player and check not out of screen
+			player.update_player_postion(screen_sizeX, screen_sizeY)
+			bullet.update_bullet_position(screen_sizeX, screen_sizeY)
+			
+			if game_over:
+				player.explosion_counter = 0
+				show_game_over(screen_sizeX, screen_sizeY, score, highest_score_from_df_1, highest_score_from_df_2, highest_score_from_df_3)
+				show_score(score, level, highest_score_from_df_1, highest_score_from_df_2, highest_score_from_df_3, screen_x = screen_sizeX)
+
+			else:
+
+				# Move enemies and check collisions
+				for i in range(num_of_enemies):
+
+					# if enemy exploding
+					if enemy[i].explosion_counter >= 1:
+						enemy[i].explosion_counter -= 1
+					elif enemy[i].explosion_counter == 0:
+						enemy_respawn(enemy[i], level)
+					else:
+						enemy[i].update_enemy_position(screen_sizeX, screen_sizeY)
+						if enemy[i].posY > screen_sizeY:
+							enemy_respawn(enemy[i], level)
+						enemy[i].show()
+
+						# if enemy collision with player
+						if is_collision(enemy[i], player):
+							explosion_sound.play()
+							player.explosion_counter = 5
+							if score > session_high_score:
+								session_high_score = score
+							game_over = True
+
+						# if bullet hits enemy
+						elif bullet.state == 'show' and is_collision(enemy[i], bullet) :
+							explosion_sound.play()
+							enemy[i].explosion_counter = 10
+							score += enemy[i].hit_points
+							enemy_count += 1
+							bullet.state = 'hide'
+
+					# if coin exploding
+					if coin[i].explosion_counter >= 1:
+						coin[i].explosion_counter -= 1
+					elif coin[i].explosion_counter == 0:
 						coin_respawn(coin[i], level)
+					else:
+						coin[i].update_coin_position(screen_sizeX, screen_sizeY)
+						if coin[i].posY > screen_sizeY:
+							coin_respawn(coin[i], level)
+						coin[i].show()
+
+						# if coin collision with player
+						if is_collision(coin[i], player):
+							explosion_sound.play()
+							coin[i].explosion_counter = 5
+							score += coin[i].hit_points
+							coin_count += 1
+					now = datetime.now()
+					pos_x += player.posX
+					pos_y += player.posY
+					num_x += 1
+					num_y += 1
+
+					enemy[i].show()
 					coin[i].show()
 
-					# if coin collision with player
-					if is_collision(coin[i], player):
-						explosion_sound.play()
-						coin[i].explosion_counter = 5
-						score += coin[i].hit_points
-						coin_count += 1
-				now = datetime.now()
-				pos_x += player.posX
-				pos_y += player.posY
-				num_x += 1
-				num_y += 1
+				# show player
+				bullet.show()
+				player.show()
+				show_score(score, level, highest_score_from_df_1, highest_score_from_df_2, highest_score_from_df_3, screen_x = screen_sizeX)
 
-				enemy[i].show()
-				coin[i].show()
+			pygame.display.flip()
 
-			# show player
-			bullet.show()
-			player.show()
-			show_score(score, level, highest_score_from_df_1, highest_score_from_df_2, highest_score_from_df_3, screen_x = screen_sizeX)
+			clock.tick(frames_per_second)
+			
 
-		pygame.display.flip()
-
-		clock.tick(frames_per_second)
+			if player.explosion_counter > 0 :
+				# to freeze and show player explosion longer
+				time.sleep(1)
 		
+		# Update High Score database
+		if score > 0:
+			high_scores.high_scores_update_db(db_connection, PLAYER_NAME, score)
 
-		if player.explosion_counter > 0 :
-			# to freeze and show player explosion longer
-			time.sleep(1)
-	
-	# Update High Score database
-	if score > 0:
-		high_scores.high_scores_update_db(db_connection, PLAYER_NAME, score)
-
-	#create dict for store focus metric
-	try:
-		a = {'player_name':PLAYER_NAME,
-			'score':score,
-			'player_x':str(pos_x/num_x),
-			'player_y':str(pos_y/num_y),
-			'enemy_count':str(enemy_count),
-			'coin_count':str(coin_count),
-			'bullet_count':str(bullet_count),
-			'miss_bullet_count':str(bullet_count-enemy_count),
-			'timestamp':str(int(datetime.timestamp(now)))
-			}
-	except ZeroDivisionError:
-		continue
-	csv_ls.append(a)
-	fieldnames =['player_name','score','player_x','player_y','enemy_count','coin_count','bullet_count','miss_bullet_count','timestamp']
-	with open(f'game_data.csv', 'a', encoding='UTF8', newline='') as f:
-		writer = csv.DictWriter(f,fieldnames)
-		writer.writerows([csv_ls[game_round]])
-	game_round =+ 1
-db_connection.close()
-print('Successfully quit Space Wars!')
+		#create dict for store focus metric
+		try:
+			a = {'player_name':PLAYER_NAME,
+				'score':score,
+				'player_x':str(pos_x/num_x),
+				'player_y':str(pos_y/num_y),
+				'enemy_count':str(enemy_count),
+				'coin_count':str(coin_count),
+				'bullet_count':str(bullet_count),
+				'miss_bullet_count':str(bullet_count-enemy_count),
+				'timestamp':str(int(datetime.timestamp(now)))
+				}
+		except ZeroDivisionError:
+			continue
+		csv_ls.append(a)
+		fieldnames =['player_name','score','player_x','player_y','enemy_count','coin_count','bullet_count','miss_bullet_count','timestamp']
+		with open(f'game_data.csv', 'a', encoding='UTF8', newline='') as f:
+			writer = csv.DictWriter(f,fieldnames)
+			writer.writerows([csv_ls[game_round]])
+		game_round =+ 1
+	db_connection.close()
+	print('Successfully quit Space Wars!')
