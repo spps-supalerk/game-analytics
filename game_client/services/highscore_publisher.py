@@ -18,7 +18,7 @@ client.setalias("highscore-publisher")
 sql_query = """
 select user, score
 from gamestat order by score desc, timestamp
-limit 3
+limit 5
 """
 
 def callback_connect() :
@@ -40,7 +40,7 @@ client.on_error = callback_error
 # client.subscribe("/highscore") 
 client.connect(False)
 
-wait = 5
+wait = 3
 rs = []
 while True:
     try:
