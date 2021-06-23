@@ -14,6 +14,7 @@ Revision updates:
 Backlog_revision_history.txt
 """
 
+import pickle
 from numpy.lib.index_tricks import fill_diagonal
 import pandas as pd
 import pygame
@@ -24,15 +25,9 @@ import time
 import sqlite3
 from datetime import datetime
 from high_scores import high_scores
+from multiprocessing import Process
+from services import test_client
 import csv
-import microgear.client as client
-import logging
-import time
-import sqlite3
-from datetime import datetime
-from multiprocessing import Process, Lock, freeze_support
-from multiprocessing.sharedctypes import Value, Array
-import ctypes
 #import space_wars_settings as sws
 
 # initialize pygame
@@ -233,18 +228,16 @@ def show_high_scores():
 
 		message_display_center('High Scores', font_large, yellow, int(screen_sizeX/2), int(screen_sizeY * 1/10))
 		message_display_center('Press (D)elete or any other key to continue', font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *9/10))
-		print('game loop:', time.time())
-		msg = msg_buffer.value
-		top_5 = parse_message(msg)
-		if top_5 == "b'                                                                                                    '":
-			message_display_center('No High Score', font_medium, yellow, int(screen_sizeX * 3/4), int(screen_sizeY *(3)/10))
-		else:
-			index = 0
-			for entry in top_5:
-				# timestamp, name, score, date
-				index += 1
-				message_display_left(str(entry[1]), font_medium, yellow, int(screen_sizeX * 1/8), int(screen_sizeY *(2+index)/10))
-				message_display_right(str(entry[0]), font_medium, yellow, int(screen_sizeX * 2/4), int(screen_sizeY *(2+index)/10))
+
+		top_5 = high_scores.high_scores_top_list(db_connection)
+
+		index = 0
+		for entry in top_5:
+			# timestamp, name, score, date
+			index += 1
+			message_display_left(str(entry[1]), font_medium, yellow, int(screen_sizeX * 1/8), int(screen_sizeY *(2+index)/10))
+			message_display_right(str(entry[2]), font_medium, yellow, int(screen_sizeX * 2/4), int(screen_sizeY *(2+index)/10))
+			message_display_center(str(entry[3]), font_medium, yellow, int(screen_sizeX * 3/4), int(screen_sizeY *(2+index)/10))
 
 
 		for event in pygame.event.get():
@@ -404,6 +397,23 @@ def is_collision(object1, object2):
 def show_explosion(object, image):
 	screen.blit(image, (int(object.posX), int(object.posY)))
 
+def load_highest_score():
+    
+    p = Process(target= test_client.highscore_subscriber)
+    p.start()
+    tick = time.time()
+
+    while True:
+        tock = time.time()
+
+        # print high scores every 5 seconds
+        if tock - tick > 5:
+            with open(test_client.TEMP_FILE, 'rb') as f:
+                highscores = pickle.load(f)
+            tick = tock # reset timer
+        time.sleep(5)
+
+    p.join()
     
 
 def show_score(score, level, highest_score_1, highest_score_2, highest_score_3, screen_x, font_size = 16, x=10, y=10):
@@ -413,7 +423,7 @@ def show_score(score, level, highest_score_1, highest_score_2, highest_score_3, 
 	highest_score_text_1 = score_font.render("1st : " + str(highest_score_1), True, (255, 255, 0))
 	highest_score_text_2 = score_font.render("2nd : " + str(highest_score_2), True, (255, 255, 0))
 	highest_score_text_3 = score_font.render("3rd : " + str(highest_score_3), True, (255, 255, 0))
-
+ 
 	screen.blit(level_text, (x, y))
 	screen.blit(score_text, (x, y + 5 + font_size))
 	screen.blit(highest_score_text_1, (screen_x-150, y + 0))
@@ -421,113 +431,35 @@ def show_score(score, level, highest_score_1, highest_score_2, highest_score_3, 
 	screen.blit(highest_score_text_3, (screen_x-154, y + 35 + font_size))
 
 
-def show_game_over(screen_sizeX, screen_sizeY, player_name, score, high_score_a):
-    new_score = (score,PLAYER_NAME)
-    if new_score in high_score_a:
-        pass
-    else:
-        high_score_a.append(new_score)
-        high_score_a.sort(reverse=True)
-    highest_score_1 = high_score_a[0][1] + " - " + str(high_score_a[0][0])
-    highest_score_2 = high_score_a[1][1] + " - " + str(high_score_a[1][0])
-    highest_score_3 = high_score_a[2][1] + " - " + str(high_score_a[2][0])
-    # Move enemies below screen (is there a better way?)
-    for i in range(num_of_enemies):
-        enemy[i].posY = screen_sizeY + 100
-    # Display text and score
-    message_display_center('GAME OVER', font_large, yellow, int(screen_sizeX/2), int(screen_sizeY * 2/10))
-    message_display_center('Your Score : ' + str(score), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *3/10))
-    message_display_center('1st : ' + str(highest_score_1), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *4/10))
-    message_display_center('2nd : ' + str(highest_score_2), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *5/10))
-    message_display_center('3rd : ' + str(highest_score_3), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *6/10))
-    message_display_center('Press any key to continue', font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *8/10))
+def show_game_over(screen_sizeX, screen_sizeY, score, highest_score_1, highest_score_2, highest_score_3):
+	
+	# Move enemies below screen (is there a better way?)
+	for i in range(num_of_enemies):
+		enemy[i].posY = screen_sizeY + 100
 
-# DATABASE = './gamedb.db'
-# TEMP_FILE = './temp.pkl'
-
-# initlize msg buffer (array of byte - size=100)
-msg_buffer = Array('c', (" "*100).encode('utf-8'), lock=False)
-
-def parse_message(msg):
-	tokens = msg.decode('utf-8')[2:-1].split(',')
-	highscores = [(int(tokens[i+1]), tokens[i]) for i in range(len(tokens)) if i%2==0]
-	return highscores
-
-def print_highscores(highscores):
-    if highscores: 
-        for s in highscores:
-            print(f"{s[0]}: {s[1]} {s[2]}")
-    else:
-        print('no scores')
-
-def callback_connect() :
-    print ("Now I am connected with netpie")
-    
-def callback_message(topic, message) :
-    print(topic, message)
-
-def callback_error(msg) :
-    print("error", msg)
-
-def format_message(rs):
-    return ','.join(map(lambda x: ','.join(map(str, x)),rs))
-
-
-# Process 2
-def highscore_subscriber(msg_buffer):
-
-    def callback_connect():
-        print ("Now I am connected with netpie")
-
-    def callback_error(msg) :
-        print("error", msg)
-
-    def callback_message(topic, message) :
-        # print(topic, message)
-        msg_buffer.value = message.encode('utf-8')
-    
-    # NetPie client
-    # key: sub-highscore
-    appid = 'MookataGame'
-    gearkey = 'Q1GXcLhGXDHKqLH'
-    gearsecret = 'dojFgPxaY0yY901bwK4YmWx6V'
-
-    client.create(gearkey,gearsecret,appid,{'debugmode': True})
-    client.setalias("test-game-client")
-    client.on_connect = callback_connect 
-    client.on_message = callback_message
-    client.on_error = callback_error
-    client.subscribe("/highscore")
-    client.connect(True)
+	# Display text and score
+	message_display_center('GAME OVER', font_large, yellow, int(screen_sizeX/2), int(screen_sizeY * 2/10))
+	message_display_center('Your Score : ' + str(score), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *3/10))
+	message_display_center('1st : ' + str(highest_score_1), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *4/10))
+	message_display_center('2nd : ' + str(highest_score_2), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *5/10))
+	message_display_center('3rd : ' + str(highest_score_3), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *6/10))
+	message_display_center('Press any key to continue', font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *8/10))
 
 
 #############################
 #		Main Program		#
 #############################
 if __name__ == '__main__':
-	
-	p = Process(target=highscore_subscriber, args=(msg_buffer,))
-	p.start()
-	time.sleep(2)
-	appid = 'MookataGame'
-	gearkey = '5aTga8Ic047dpQI'
-	gearsecret = 'icVIYaxXJp9ltF8XwMM5MAS3k'
 
-	client.create(gearkey,gearsecret,appid,{'debugmode': True}) 
-	client.setalias("highscore-pub")
-	client.on_connect = callback_connect 
-	client.on_message= callback_message 
-	client.on_error = callback_error 
-	client.connect(False)
 	# # initialize pygame
 	# pygame.init()
 
 	# # Initialize fonts
-	# font_huge	= pygame.font.Font('freesansbold.ttf', 128)
-	# font_large	= pygame.font.Font('freesansbold.ttf', 64)
-	# font_medium	= pygame.font.Font('freesansbold.ttf', 32)
-	# font_small	= pygame.font.Font('freesansbold.ttf', 16)
-	# font_tiny	= pygame.font.Font('freesansbold.ttf', 8)
+	font_huge	= pygame.font.Font('freesansbold.ttf', 128)
+	font_large	= pygame.font.Font('freesansbold.ttf', 64)
+	font_medium	= pygame.font.Font('freesansbold.ttf', 32)
+	font_small	= pygame.font.Font('freesansbold.ttf', 16)
+	font_tiny	= pygame.font.Font('freesansbold.ttf', 8)
 
 
 	# Initialize Global CONSTANTS from space_wars_settings.py (sws)
@@ -604,11 +536,10 @@ if __name__ == '__main__':
 	# --------------------
 	# Full Game Play Loop
 	# --------------------
-	
+
 	csv_ls=[]
 	quit_game = False
 	game_round = 0
-
 	while not quit_game:
 
 		# Start manu
@@ -657,11 +588,12 @@ if __name__ == '__main__':
 			coin_respawn(coin[i], level)
 
 		# init high score process
+		p = Process(target= test_client.highscore_subscriber)
+		p.start()
+		tick = time.time()
 		highest_score_from_df_1 = str()
 		highest_score_from_df_2 = str()
 		highest_score_from_df_3 = str()
-		highest_score_from_df_4 = str()
-		highest_score_from_df_5 = str()
 
 		# --------------------
 		# Main Game Play Loop
@@ -678,25 +610,24 @@ if __name__ == '__main__':
 		num_y = 0
 
 		while not go_to_menu and not quit_game:
-			# print('game loop:', time.time())
-			msg = msg_buffer.value
-			try:
-				high_score_all = parse_message(msg)
-			except:
-				pass
-			try:
-				highest_score_from_df_1 = str(high_score_all[0][1]) + " " + str(high_score_all[0][0])
-			except:
-				highest_score_from_df_1 = str()
-			try:
-				highest_score_from_df_2 = str(high_score_all[1][1]) + " " + str(high_score_all[1][0])
-			except:
-				highest_score_from_df_2 = str()
-			try:
-				highest_score_from_df_3 = str(high_score_all[2][1]) + " " + str(high_score_all[2][0])
-			except:
-				highest_score_from_df_3 = str()
-
+			tock = time.time()
+			if tock - tick > 5:
+				with open(test_client.TEMP_FILE, 'rb') as f:
+					highscores = pickle.load(f)
+					tick = tock # reset timer
+					df_highscores = pd.DataFrame(highscores)
+					try:
+						highest_score_from_df_1 = str(df_highscores[1][0]) + " " + str(df_highscores[2][0])
+					except:
+						highest_score_from_df_1 = str()
+					try:
+						highest_score_from_df_2 = str(df_highscores[1][1]) + " " + str(df_highscores[2][1])
+					except:
+						highest_score_from_df_2 = str()
+					try:
+						highest_score_from_df_3 = str(df_highscores[1][2]) + " " + str(df_highscores[2][2])
+					except:
+						highest_score_from_df_3 = str()
 
 			# Fill screen and background image
 			screen.fill(background_color)
@@ -785,9 +716,8 @@ if __name__ == '__main__':
 			bullet.update_bullet_position(screen_sizeX, screen_sizeY)
 			
 			if game_over:
-       
 				player.explosion_counter = 0
-				show_game_over(screen_sizeX, screen_sizeY, PLAYER_NAME, score, high_score_all)
+				show_game_over(screen_sizeX, screen_sizeY, score, highest_score_from_df_1, highest_score_from_df_2, highest_score_from_df_3)
 				show_score(score, level, highest_score_from_df_1, highest_score_from_df_2, highest_score_from_df_3, screen_x = screen_sizeX)
 
 			else:
@@ -861,12 +791,11 @@ if __name__ == '__main__':
 			if player.explosion_counter > 0 :
 				# to freeze and show player explosion longer
 				time.sleep(1)
-			
+		
 		# Update High Score database
 		if score > 0:
 			high_scores.high_scores_update_db(db_connection, PLAYER_NAME, score)
-		b = str(int(datetime.timestamp(now)))+","+PLAYER_NAME+","+str(score)+","+str(pos_x/num_x)+","+str(pos_y/num_y)+","+str(enemy_count)+","+str(coin_count)+","+str(bullet_count)+","+str(bullet_count-enemy_count)+","+str(int(datetime.timestamp(now)))
-		client.publish('/score', b)
+
 		#create dict for store focus metric
 		try:
 			a = {'player_name':PLAYER_NAME,
@@ -882,12 +811,10 @@ if __name__ == '__main__':
 		except ZeroDivisionError:
 			continue
 		csv_ls.append(a)
-		
 		fieldnames =['player_name','score','player_x','player_y','enemy_count','coin_count','bullet_count','miss_bullet_count','timestamp']
 		with open(f'game_data.csv', 'a', encoding='UTF8', newline='') as f:
 			writer = csv.DictWriter(f,fieldnames)
 			writer.writerows([csv_ls[game_round]])
 		game_round =+ 1
 	db_connection.close()
-	
 	print('Successfully quit Space Wars!')
