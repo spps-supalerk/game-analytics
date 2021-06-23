@@ -18,6 +18,8 @@ from numpy.lib.index_tricks import fill_diagonal
 import pandas as pd
 import pygame
 import random
+import pickle
+import numpy as np
 import math
 import os
 import time
@@ -421,7 +423,7 @@ def show_score(score, level, highest_score_1, highest_score_2, highest_score_3, 
 	screen.blit(highest_score_text_3, (screen_x-154, y + 35 + font_size))
 
 
-def show_game_over(screen_sizeX, screen_sizeY, player_name, score, high_score_a):
+def show_game_over(screen_sizeX, screen_sizeY, player_name, score, high_score_a, player_type):
     new_score = (score,PLAYER_NAME)
     if new_score in high_score_a:
         pass
@@ -437,10 +439,11 @@ def show_game_over(screen_sizeX, screen_sizeY, player_name, score, high_score_a)
     # Display text and score
     message_display_center('GAME OVER', font_large, yellow, int(screen_sizeX/2), int(screen_sizeY * 2/10))
     message_display_center('Your Score : ' + str(score), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *3/10))
-    message_display_center('1st : ' + str(highest_score_1), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *4/10))
-    message_display_center('2nd : ' + str(highest_score_2), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *5/10))
-    message_display_center('3rd : ' + str(highest_score_3), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *6/10))
-    message_display_center('Press any key to continue', font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *8/10))
+    message_display_center('Your Style : ' + player_type, font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *4/10))
+    message_display_center('1st : ' + str(highest_score_1), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *5/10))
+    message_display_center('2nd : ' + str(highest_score_2), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *6/10))
+    message_display_center('3rd : ' + str(highest_score_3), font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *7/10))
+    message_display_center('Press any key to continue', font_medium, yellow, int(screen_sizeX/2), int(screen_sizeY *9/10))
 
 # DATABASE = './gamedb.db'
 # TEMP_FILE = './temp.pkl'
@@ -600,6 +603,18 @@ if __name__ == '__main__':
 	bullet_speed		= 10
 	session_high_score 	= 0
 
+	# Player type dict
+	seg_dict = { 0:'Hardcore achiever'
+				,1:'Casual achiever'
+				,2:'Hardcore killer'
+				,3:'Casual killer'
+				}
+
+	# load minmax_scaler model and kmeans
+	DIR_TRANSFORM_MODEL = './scaler_model.pkl'
+	DIR_PREDICTION_MODEL = './kmeans_model.pkl'
+	scaler_model = pickle.load(open(DIR_TRANSFORM_MODEL,'rb'))
+	kmeans_model = pickle.load(open(DIR_PREDICTION_MODEL, 'rb'))
 
 	# --------------------
 	# Full Game Play Loop
@@ -786,8 +801,13 @@ if __name__ == '__main__':
 			
 			if game_over:
 				
+				# predict player type
+				scaler_score = scaler_model.transform(np.array([enemy_count, coin_count]).reshape(1,-1))
+				player_type = kmeans_model.predict(scaler_score)
+				player_type = seg_dict[player_type[0]]
+
 				player.explosion_counter = 0
-				show_game_over(screen_sizeX, screen_sizeY, PLAYER_NAME, score, high_score_all)
+				show_game_over(screen_sizeX, screen_sizeY, PLAYER_NAME, score, high_score_all, player_type)
 				show_score(score, level, highest_score_from_df_1, highest_score_from_df_2, highest_score_from_df_3, screen_x = screen_sizeX)
 				
 				
