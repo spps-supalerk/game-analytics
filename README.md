@@ -1,4 +1,7 @@
 # Game Analytics - Quiz 3
 
-## Draft architecture
-![design](./design.jpg)
+## High-level architecture
+![design](./design.png)
+
+## Client-side architecture
+![client](./client.png)
