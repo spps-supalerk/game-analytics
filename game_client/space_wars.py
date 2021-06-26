@@ -238,16 +238,12 @@ def show_high_scores():
 		# print('game loop:', time.time())
 		msg = msg_buffer.value
 		top_5 = parse_message(msg)
-		if top_5 == "b'                                                                                                    '":
-			message_display_center('No High Score', font_medium, yellow, int(screen_sizeX * 3/4), int(screen_sizeY *(3)/10))
-		else:
-			index = 0
-			for entry in top_5:
-				# timestamp, name, score, date
-				index += 1
-				message_display_left(str(entry[1]), font_medium, yellow, int(screen_sizeX * 1/8), int(screen_sizeY *(2+index)/10))
-				message_display_right(str(entry[0]), font_medium, yellow, int(screen_sizeX * 2/4), int(screen_sizeY *(2+index)/10))
-
+		index = 0
+		for entry in top_5:
+			# name, score
+			index += 1
+			message_display_left(str(entry[1]), font_medium, yellow, int(screen_sizeX * 1/8), int(screen_sizeY *(2+index)/10))
+			message_display_right(str(entry[0]), font_medium, yellow, int(screen_sizeX * 2/4), int(screen_sizeY *(2+index)/10))
 
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
