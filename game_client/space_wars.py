@@ -571,6 +571,7 @@ if __name__ == '__main__':
 	background_image	= [pygame.image.load(os.path.join(images_path, 'background_03.jpg')),
 							pygame.image.load(os.path.join(images_path, 'background_03_usd.jpg'))]
 	coin_image 			= pygame.image.load(os.path.join(images_path, 'dodgecoin.png'))
+	background_image_hight = 600
 
 	# Caption and Icon
 	pygame.display.set_caption("Space Wars")
