@@ -554,23 +554,23 @@ if __name__ == '__main__':
 
 
 	# Initialize images
-	icon_image			= pygame.image.load(os.path.join(images_path , 'icon_07.png'))
-	player_image		= pygame.image.load(os.path.join(images_path, 'MilFal_03.png'))
+	icon_image			= pygame.image.load(os.path.join(images_path , 'game_icon.png'))
+	player_image		= pygame.image.load(os.path.join(images_path, 'spaceship.png'))
 	bullet_image		= pygame.image.load(os.path.join(images_path, 'bullet.png'))
-	enemy_image	    	= [pygame.image.load(os.path.join(images_path, 'ufo_01.png')),
-							pygame.image.load(os.path.join(images_path, 'ufo_02.png')),
-							pygame.image.load(os.path.join(images_path, 'ufo_03.png')),
-							pygame.image.load(os.path.join(images_path, 'ufo_04.png')),
-							pygame.image.load(os.path.join(images_path, 'spaceship_03_usd.png')),
-							pygame.image.load(os.path.join(images_path, 'spaceship_01_usd.png')),
-							pygame.image.load(os.path.join(images_path, 'death_star_02.png')),
-							pygame.image.load(os.path.join(images_path, 'death_star_03.png'))]
+	enemy_image	    	= [pygame.image.load(os.path.join(images_path, 'alien_1.png')),
+							pygame.image.load(os.path.join(images_path, 'alien_2.png')),
+							pygame.image.load(os.path.join(images_path, 'ufo_1.png')),
+							pygame.image.load(os.path.join(images_path, 'ufo_2.png')),
+							pygame.image.load(os.path.join(images_path, 'ufo_3.png')),
+							pygame.image.load(os.path.join(images_path, 'enemy_spaceship_1.png')),
+							pygame.image.load(os.path.join(images_path, 'enemy_spaceship_2.png')),
+							pygame.image.load(os.path.join(images_path, 'enemy_spaceship_3.png'))]
 	explosion_image		= [pygame.image.load(os.path.join(images_path, 'explosion_01.png')),
 							pygame.image.load(os.path.join(images_path, 'explosion_02.png'))]
+	collect_image		= pygame.image.load(os.path.join(images_path, 'collect.png'))
 	background_image	= [pygame.image.load(os.path.join(images_path, 'background_03.jpg')),
 							pygame.image.load(os.path.join(images_path, 'background_03_usd.jpg'))]
 	coin_image 			= pygame.image.load(os.path.join(images_path, 'dodgecoin.png'))
-	background_image_hight = 600
 
 	# Caption and Icon
 	pygame.display.set_caption("Space Wars")
@@ -579,6 +579,7 @@ if __name__ == '__main__':
 	# Initialize sounds
 	bullet_sound		= pygame.mixer.Sound(os.path.join(sounds_path, 'laser.wav'))
 	explosion_sound		= pygame.mixer.Sound(os.path.join(sounds_path, 'explosion.wav'))
+	collect_sound		= pygame.mixer.Sound(os.path.join(sounds_path, 'collect.wav'))
 
 	# Start backgound music
 	if MUSIC:
@@ -666,7 +667,7 @@ if __name__ == '__main__':
 		coin = []
 		# coin_image_index = 0
 		for i in range(num_of_coins):
-			coin.append(SpaceCoin(coin_image, explosion_image[1], speedY = level, hit_points = level))
+			coin.append(SpaceCoin(coin_image, collect_image, speedY = level, hit_points = level))
 			coin_respawn(coin[i], level)
 
 		# init high score process
@@ -739,7 +740,7 @@ if __name__ == '__main__':
 				num_of_enemies	+= level_enemy_increase
 
 				for i in range(num_of_coins,num_of_coins+level_coin_increase):
-					coin.append(SpaceCoin(coin_image, explosion_image[1], speedY = level, hit_points = level))
+					coin.append(SpaceCoin(coin_image, collect_image, speedY = level, hit_points = level))
 					coin_respawn(coin[i], level)
 				num_of_coins += level_coin_increase
 
@@ -858,7 +859,7 @@ if __name__ == '__main__':
 
 						# if coin collision with player
 						if is_collision(coin[i], player):
-							explosion_sound.play()
+							collect_sound.play()
 							coin[i].explosion_counter = 5
 							score += coin[i].hit_points
 							coin_count += 1
