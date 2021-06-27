@@ -404,16 +404,18 @@ def show_explosion(object, image):
 
     
 
-def show_score(score, level, highest_score_1, highest_score_2, highest_score_3, screen_x, font_size = 16, x=10, y=10):
+def show_score(score, level, player, highest_score_1, highest_score_2, highest_score_3, screen_x, font_size = 16, x=10, y=15):
 	score_font = pygame.font.Font('freesansbold.ttf', font_size)
 	level_text = score_font.render("Level  : " + str(level), True, (255, 255, 0))
 	score_text = score_font.render("Score : " + str(score), True, (255, 255, 0))
+	player_text = score_font.render('Player : ' + str(player), True, (255, 255, 0))
 	highest_score_text_1 = score_font.render("1st : " + str(highest_score_1), True, (255, 255, 0))
 	highest_score_text_2 = score_font.render("2nd : " + str(highest_score_2), True, (255, 255, 0))
 	highest_score_text_3 = score_font.render("3rd : " + str(highest_score_3), True, (255, 255, 0))
 
-	screen.blit(level_text, (x, y))
-	screen.blit(score_text, (x, y + 5 + font_size))
+	screen.blit(level_text, (x, y + 0 ))
+	screen.blit(score_text, (x, y + 10 + font_size))
+	screen.blit(player_text, (x, y + 35 + font_size))
 	screen.blit(highest_score_text_1, (screen_x-150, y + 0))
 	screen.blit(highest_score_text_2, (screen_x-157, y + 10 + font_size))
 	screen.blit(highest_score_text_3, (screen_x-154, y + 35 + font_size))
@@ -804,7 +806,7 @@ if __name__ == '__main__':
 
 				player.explosion_counter = 0
 				show_game_over(screen_sizeX, screen_sizeY, PLAYER_NAME, score, high_score_all, player_type)
-				show_score(score, level, highest_score_from_df_1, highest_score_from_df_2, highest_score_from_df_3, screen_x = screen_sizeX)
+				show_score(score, level, PLAYER_NAME, highest_score_from_df_1, highest_score_from_df_2, highest_score_from_df_3, screen_x = screen_sizeX)
 				time.sleep(2)
 				
 				if not_sent_score:
@@ -872,7 +874,7 @@ if __name__ == '__main__':
 				# show player
 				bullet.show()
 				player.show()
-				show_score(score, level, highest_score_from_df_1, highest_score_from_df_2, highest_score_from_df_3, screen_x = screen_sizeX)
+				show_score(score, level, PLAYER_NAME, highest_score_from_df_1, highest_score_from_df_2, highest_score_from_df_3, screen_x = screen_sizeX)
 
 			pygame.display.flip()
 
