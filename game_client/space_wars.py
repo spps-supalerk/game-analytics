@@ -805,7 +805,7 @@ if __name__ == '__main__':
 				player.explosion_counter = 0
 				show_game_over(screen_sizeX, screen_sizeY, PLAYER_NAME, score, high_score_all, player_type)
 				show_score(score, level, highest_score_from_df_1, highest_score_from_df_2, highest_score_from_df_3, screen_x = screen_sizeX)
-				
+				time.sleep(2)
 				
 				if not_sent_score:
 					b = str(int(datetime.timestamp(now)))+","+PLAYER_NAME+","+str(score)+","+str(pos_x/num_x)+","+str(pos_y/num_y)+","+str(enemy_count)+","+str(coin_count)+","+str(bullet_count)+","+str(bullet_count-enemy_count)+","+str(int(datetime.timestamp(now)))
